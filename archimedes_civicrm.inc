@@ -20,27 +20,33 @@ function archimedes_civicrm_get_extensions() {
       try {
         $obj = $mapper->keyToInfo($key);
         $data = CRM_Admin_Page_Extensions::createExtendedInfo($obj);
+        $node = array();
         $mapping = array(
           // Archimedes field => CiviCRM field.
           'title' => 'name',
           'name' => 'name',
-          'key' => 'key',
-          'field_version' => 'version',
           'type' => 'type',
-          'stage' => 'develStage',
-          'status' => 'status',
-          'release_date' => 'releaseDate',
-          'body' => 'description',
+          'field_key' => 'key',
+          'field_version' => 'version',
+          'field_stage' => 'develStage',
+          'field_status' => 'status',
+          'field_release_date' => 'releaseDate',
+          'field_body' => 'description',
           // 'compatibility' => 'compatibility',
           // 'urls' => 'urls',
         );
         foreach ($mapping as $k => $v) {
           $node[$k] = isset($data[$v]) ? $data[$v] : '';
         }
-        
+
         // Deeper values.
         if (isset($data['compatibility'])) {
-          $node['compatibility'] = implode(', ', $data['compatibility']);
+            if (is_array($data['compatibility']['ver'])) {
+                $node['compatibility'] = implode(', ', $data['compatibility']['ver']);
+            }
+            else {
+                $node['compatibility'] = $data['compatibility']['ver'];
+            }
           $node['body'] .= PHP_EOL . PHP_EOL . $node['compatibility'];
         }
 
