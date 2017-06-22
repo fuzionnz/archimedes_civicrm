@@ -20,8 +20,11 @@ function archimedes_civicrm_get_extensions() {
       try {
         $obj = $mapper->keyToInfo($key);
         $data = CRM_Admin_Page_Extensions::createExtendedInfo($obj);
-        $node = array();
-        $mapping = array(
+        $node = [
+          'title' => '(unknown)',
+          'body' => '',
+        ];
+        $mapping = [
           // Archimedes field => CiviCRM field.
           'title' => 'name',
           'name' => 'name',
@@ -31,23 +34,27 @@ function archimedes_civicrm_get_extensions() {
           'field_stage' => 'develStage',
           'field_status' => 'status',
           'field_release_date' => 'releaseDate',
-          'field_body' => 'description',
+          'body' => 'description',
           // 'compatibility' => 'compatibility',
           // 'urls' => 'urls',
-        );
+        ];
         foreach ($mapping as $k => $v) {
           $node[$k] = isset($data[$v]) ? $data[$v] : '';
         }
 
         // Deeper values.
         if (isset($data['compatibility'])) {
-            if (is_array($data['compatibility']['ver'])) {
-                $node['compatibility'] = implode(', ', $data['compatibility']['ver']);
-            }
-            else {
-                $node['compatibility'] = $data['compatibility']['ver'];
-            }
-          $node['body'] .= PHP_EOL . PHP_EOL . $node['compatibility'];
+          $node['body'] .= PHP_EOL . PHP_EOL;
+          if (is_array($data['compatibility']['ver'])) {
+            $node['compatibility'] = implode(', ', $data['compatibility']['ver']);
+            // @TODO Better in Drupal as field values not a commasep string?
+            $node['field_compatibility'] = implode(', ', $data['compatibility']['ver']);
+          }
+          else {
+            $node['compatibility'] = $data['compatibility']['ver'];
+            $node['field_compatibility'] = $data['compatibility']['ver'];
+          }
+          $node['body'] .= "* CiviCRM versions supported: ${node['compatibility']}" . PHP_EOL;
         }
 
         if (isset($data['urls']) && is_array($data['urls'])) {
