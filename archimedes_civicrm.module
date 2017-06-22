@@ -27,3 +27,12 @@ function archimedes_civicrm_archimedes_rows_alter(&$rows, &$owl) {
     $rows[] = array(t('CiviCRM Extensions'), $civicrm_ext);
   }
 }
+
+/**
+ * Additional output for archimedes_out().
+ */
+function archimedes_civicrm_archimedes_out($owl) {
+  $header = array('CiviCRM Extensions','Version','Description');
+  $extensions = theme('table', array('header' => $header, 'rows' => $owl->getField('field_civicrm_ext')->toArray()));
+  return $extensions;
+}
