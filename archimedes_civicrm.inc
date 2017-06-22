@@ -14,9 +14,9 @@ function archimedes_civicrm_get_extensions() {
     civicrm_initialize();
     $mapper = CRM_Extension_System::singleton()->getMapper();
     $manager = CRM_Extension_System::singleton()->getManager();
-    $extensions = array();
-    $keys = array_keys($manager->getStatuses());
-    foreach ($keys as $key) {
+    $enabled = array_keys(array_filter($manager->getStatuses(), function($status) { return $status == 'installed'; }));
+
+    foreach ($enabled as $key) {
       try {
         $obj = $mapper->keyToInfo($key);
         $data = CRM_Admin_Page_Extensions::createExtendedInfo($obj);
